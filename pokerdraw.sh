@@ -16,8 +16,11 @@
 #
 # Contributors: GPT-4-turbo (ChatGPT, February 2025) & Claude 3.5 Sonnet
 # Author: Xiamen
-# Version: 1.0
+# Version: 1.0a
 # Date: Feb/15/2025
+#
+# Changelog: 1.0a Feb 26
+# Fixed, padding issue for 10, all output is same length.
 #
 ###############
 
@@ -39,7 +42,12 @@ generate_deck() {
     local deck=()
     for value in "${VALUES[@]}"; do
         for suit in "${SUITS[@]}"; do
-            deck+=("$value$suit")
+#            deck+=("$value$suit")
+			 if [[ "$value" == "10" ]]; then
+    			deck+=("10$suit")  # Remove space for 10
+			else
+    			deck+=("$value$suit")
+			fi
         done
     done
     echo "${deck[@]}"
@@ -147,20 +155,37 @@ parse_hand "${hand[@]}"
 evaluate_hand
 
 # Print hand with colors
-#echo -n "Hand: "
 for card in "${hand[@]}"; do
     value="${card:0:-1}"
     suit="${card: -1}"
     
+    # Pad value to 2 characters for consistent width
+    padded_value=$(printf "%-2s" "$value")
+
     # Color the suits
     case "$suit" in
         "♥"|"♦") color="${RED}" ;;
         *) color="${BLACK}" ;;
     esac
 
-    echo -ne "${WHITE_BG}${BLACK}[${value} ${color}${suit}${RESET}${WHITE_BG}${BLACK}]${RESET} "
+    # Print card with padding and colors
+    echo -ne "${WHITE_BG}${BLACK}[${padded_value}${color}${suit}${RESET}${WHITE_BG}${BLACK}]${RESET} "
 done
 
-# Print the best hand on the same line
-echo -e "→ ${hand_rank}"
+# Print hand with colors
+#echo -n "Hand: "
+#for card in "${hand[@]}"; do
+#    value="${card:0:-1}"
+#    suit="${card: -1}"
+    
+    # Color the suits
+#    case "$suit" in
+#        "♥"|"♦") color="${RED}" ;;
+#        *) color="${BLACK}" ;;
+#    esac
 
+#    echo -ne "${WHITE_BG}${BLACK}[${value} ${color}${suit}${RESET}${WHITE_BG}${BLACK}]${RESET} "
+#done
+
+# Print the best hand on the same line
+#echo -e "→ ${hand_rank}"
