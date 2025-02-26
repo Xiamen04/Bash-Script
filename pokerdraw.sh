@@ -16,21 +16,23 @@
 #
 # Contributors: GPT-4-turbo (ChatGPT, February 2025) & Claude 3.5 Sonnet
 # Author: Xiamen
-# Version: 1.0a
-# Date: Feb/15/2025
+# Version: 1.0b
+# Date: Feb/16/2025
 #
-# Changelog: 1.0a Feb 26
-# Fixed, padding issue for 10, all output is same length.
-#
+# Changelog:
+# 1.0d reverted generate_deck function
+# 1.0c Fixed hand scoring
+# 1.0b Fixed card display formatting and scoring visibility
+# 1.0a Fixed padding issue for 10-value cards
 ###############
 
 #!/bin/bash
 
 # Use tput for colors
 RED=$(tput setaf 1)       # Red text (for hearts and diamonds)
-BLACK=$(tput setaf 0)      # Black text (for normal cards)
-WHITE_BG=$(tput setab 15)  # White background
-RESET=$(tput sgr0)         # Reset all attributes
+BLACK=$(tput setaf 0)     # Black text (for normal cards)
+WHITE_BG=$(tput setab 15) # White background
+RESET=$(tput sgr0)        # Reset all attributes
 
 # Card values and suits
 declare -a VALUES=("2" "3" "4" "5" "6" "7" "8" "9" "10" "J" "Q" "K" "A")
@@ -42,12 +44,7 @@ generate_deck() {
     local deck=()
     for value in "${VALUES[@]}"; do
         for suit in "${SUITS[@]}"; do
-#            deck+=("$value$suit")
-			 if [[ "$value" == "10" ]]; then
-    			deck+=("10$suit")  # Remove space for 10
-			else
-    			deck+=("$value$suit")
-			fi
+            deck+=("$value$suit")
         done
     done
     echo "${deck[@]}"
@@ -140,21 +137,15 @@ evaluate_hand() {
     fi
 }
 
-
-# Generate and shuffle deck
+# Main execution flow
 deck=($(generate_deck))
 shuffled_deck=($(shuffle_deck "${deck[@]}"))
-
-# Draw 5 cards from the shuffled deck
 hand=("${shuffled_deck[@]:0:5}")
 
-# Parse hand into values and suits
 parse_hand "${hand[@]}"
-
-# Evaluate the best hand
 evaluate_hand
 
-# Print hand with colors
+# Display cards and ranking on same line without "Hand: " prefix
 for card in "${hand[@]}"; do
     value="${card:0:-1}"
     suit="${card: -1}"
@@ -168,24 +159,8 @@ for card in "${hand[@]}"; do
         *) color="${BLACK}" ;;
     esac
 
-    # Print card with padding and colors
     echo -ne "${WHITE_BG}${BLACK}[${padded_value}${color}${suit}${RESET}${WHITE_BG}${BLACK}]${RESET} "
 done
 
-# Print hand with colors
-#echo -n "Hand: "
-#for card in "${hand[@]}"; do
-#    value="${card:0:-1}"
-#    suit="${card: -1}"
-    
-    # Color the suits
-#    case "$suit" in
-#        "♥"|"♦") color="${RED}" ;;
-#        *) color="${BLACK}" ;;
-#    esac
-
-#    echo -ne "${WHITE_BG}${BLACK}[${value} ${color}${suit}${RESET}${WHITE_BG}${BLACK}]${RESET} "
-#done
-
-# Print the best hand on the same line
-#echo -e "→ ${hand_rank}"
+# Add hand ranking to the same line
+echo -e "→ ${hand_rank}"
