@@ -17,9 +17,10 @@
 # Contributors: GPT-4-turbo (ChatGPT, February 2025) & Claude 3.5 Sonnet
 # Author: Xiamen
 # Version: 1.0b
-# Date: Feb/16/2025
+# Date: apr/20/2025
 #
 # Changelog:
+# 1.0e added blue and orange for spades and diamonds.
 # 1.0d reverted generate_deck function
 # 1.0c Fixed hand scoring
 # 1.0b Fixed card display formatting and scoring visibility
@@ -29,11 +30,12 @@
 #!/bin/bash
 
 # Use tput for colors
-RED=$(tput setaf 1)       # Red text (for hearts and diamonds)
-BLACK=$(tput setaf 0)     # Black text (for normal cards)
-WHITE_BG=$(tput setab 15) # White background
-RESET=$(tput sgr0)        # Reset all attributes
-
+RED=$(tput setaf 1)          # Hearts
+ORANGE=$(tput setaf 208)     # Diamonds (requires 256-color support)
+BLUE=$(tput setaf 4)         # Clubs
+BLACK=$(tput setaf 0)        # Spades
+WHITE_BG=$(tput setab 15)    # White background
+RESET=$(tput sgr0)           # Reset all attributes
 # Card values and suits
 declare -a VALUES=("2" "3" "4" "5" "6" "7" "8" "9" "10" "J" "Q" "K" "A")
 declare -a SUITS=("♠" "♥" "♣" "♦")
@@ -155,12 +157,13 @@ for card in "${hand[@]}"; do
 
     # Color the suits
     case "$suit" in
-        "♥"|"♦") color="${RED}" ;;
-        *) color="${BLACK}" ;;
+        "♥") color="${RED}" ;;
+        "♦") color="${ORANGE}" ;;
+        "♣") color="${BLUE}" ;;
+        *) color="${BLACK}" ;;  # Spades remain black
     esac
 
     echo -ne "${WHITE_BG}${BLACK}[${padded_value}${color}${suit}${RESET}${WHITE_BG}${BLACK}]${RESET} "
 done
-
 # Add hand ranking to the same line
 echo -e "→ ${hand_rank}"
