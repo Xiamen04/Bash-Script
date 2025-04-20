@@ -16,7 +16,7 @@
 #
 # Contributors: GPT-4-turbo (ChatGPT, February 2025) & Claude 3.5 Sonnet
 # Author: Xiamen
-# Version: 1.0b
+# Version: 1.0e
 # Date: apr/20/2025
 #
 # Changelog:
